@@ -1,0 +1,12 @@
+[build-system]
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "PyNakasendo"
+version = "0.0.1"
+
+[tool.scikit-build]
+cmake.verbose = true
+logging.level = "DEBUG"
+
