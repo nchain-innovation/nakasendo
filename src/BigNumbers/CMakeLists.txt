@@ -8,20 +8,18 @@
 set(BigNumbers_HPP_FILES_PUBLIC # Keep alphabet order
   ${CMAKE_CURRENT_SOURCE_DIR}/BigNumbers.h
 )
-set(BigNumbers_HPP_FILES_PRIVATE # Keep alphabet order
-  ${CMAKE_CURRENT_SOURCE_DIR}/BigNumbersImpl.h
-)
-set(BigNumbers_HPP_FILES ${BigNumbers_HPP_FILES_PUBLIC} ${BigNumbers_HPP_FILES_PRIVATE})
+
+set(BigNumbers_HPP_FILES ${BigNumbers_HPP_FILES_PUBLIC})
 
 set(BigNumbers_CPP_FILES # Keep alphabet order
   ${CMAKE_CURRENT_SOURCE_DIR}/BigNumbers.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/BigNumbersImpl.cpp
 )
 
 set(BigNumbers_SOURCE_FILES ${BigNumbers_HPP_FILES} ${BigNumbers_CPP_FILES})
 add_library(BigNumbers ${BigNumbers_SOURCE_FILES})
 
-target_link_libraries(BigNumbers OpenSSL::Crypto OpenSSL::SSL pybind11::module ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+#pybind11::module
+target_link_libraries(BigNumbers OpenSSL::Crypto OpenSSL::SSL ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 target_compile_definitions(BigNumbers PRIVATE EXPORT_BigNumbers)
 set_property(TARGET BigNumbers PROPERTY FOLDER "core")
 

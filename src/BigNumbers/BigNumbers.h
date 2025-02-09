@@ -2,11 +2,16 @@
 #define __BIG_NUMBERS_H__
 
 
+#include <vector>
 #include <memory>
+#include <iostream>
 #include <string>
 #include <vector>
+#include <openssl/bn.h>
+#include <openssl/objects.h>
 
-class BigNumberImpl; 
+using BN_ptr = std::unique_ptr<BIGNUM, decltype(&::BN_free)> ; 
+using CTX_ptr = std::unique_ptr<BN_CTX, decltype(&::BN_CTX_free)>;
 
 class BigNumber
 {
@@ -91,13 +96,14 @@ class BigNumber
         std::string generateRandPrimeHexWithSeed(const std::string& seed, const int& nsize = 512);
         std::string generateRandPrimeDecWithSeed(const std::string& seed, const int& nsize = 512);
 
-        bool isPrime() const;
+        const BN_ptr& bn_ptr() const { return m_bn; }
+        BN_ptr& bn_ptr() { return m_bn;}
         
-    private:
-        const BigNumberImpl* pImpl() const { return m_pImpl.get(); }
-        BigNumberImpl* pImpl() {return m_pImpl.get();}       
+        bool isPrime() const;
 
-        std::unique_ptr<BigNumberImpl> m_pImpl ; 
+    private:
+
+        BN_ptr m_bn; 
 };
 
 BigNumber GenerateOne ();

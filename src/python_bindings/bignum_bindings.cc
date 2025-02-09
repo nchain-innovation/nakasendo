@@ -2,15 +2,8 @@
 #include <pybind11/operators.h> 
 #include <BigNumbers/BigNumbers.h>
 
-PYBIND11_MODULE(PyNakasendo, m){
-    m.doc() = "pybind11 Nakasendo plugin";
-   // m.def("add", &add, "A function that adds two ints");
-   // m.def("bn_rand_test", &bn_rand_test, "A function to generate a large random number");
 
-
-    //m.def("create_bignum", []() {
-    //    return random_int();  // Convert back to Python int (to check round trip conversion)
-    //});
+void register_bignum_bindings(pybind11::module_ &m){
     pybind11::class_<BigNumber>(m, "PyBigNumber")
         .def(pybind11::init<>()) // bind the constructor
         .def(pybind11::init<const BigNumber&>()) // Copy constructor

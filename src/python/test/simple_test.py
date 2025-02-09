@@ -1,7 +1,7 @@
 from PyNakasendo import PyNakasendo
 
 def main() -> None:
-    print('Starting')
+    print('Starting BigNum')
     val = PyNakasendo.PyBigNumber()
     val.One()
     print(val)
@@ -22,6 +22,10 @@ def main() -> None:
     val4 = val + 1
     print(val4)
 
+def main_ec() -> None:
+    print("starting ECPoint")
+    ec_pt = PyNakasendo.PyECPoint()
 if __name__ == "__main__":
     main()
+    main_ec()
     print('Ending')
