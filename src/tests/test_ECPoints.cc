@@ -11,8 +11,7 @@
 //BOOST_AUTO_TEST_SUITE(test_suite_ECPoints)
 
 /*test case : test the addition of ECPoints, and compare the result*/
-TEST(ECPointTest, testECPointAdditionAndComparasion)
-{
+TEST(ECPointTest, testECPointAdditionAndComparasion){
     
     ECPoint ec1, ec2, ec3;
     ec1.SetRandom();

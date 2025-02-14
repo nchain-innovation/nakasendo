@@ -11,7 +11,7 @@ void register_bignum_bindings(pybind11::module_ &m){
         .def("Zero",  &BigNumber::Zero)
         .def("ToHex", &BigNumber::ToHex)
         .def("ToDec", &BigNumber::ToDec)
-        .def("GenerateRandHex", &BigNumber::generateRandHex)
+        .def("GenerateRandHex", &BigNumber::generateRandHex, pybind11::arg("nsize") = 512)
         .def("GenerateRandDec", &BigNumber::generateRandDec)
         .def("GenerateNegRandHex", &BigNumber::generateNegRandHex)
         .def("GenerateNegRandDec", &BigNumber::generateNegRandDec)

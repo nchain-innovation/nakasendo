@@ -24,7 +24,21 @@ def main() -> None:
 
 def main_ec() -> None:
     print("starting ECPoint")
-    ec_pt = PyNakasendo.PyECPoint()
+    #039381238A139463E2AC961E4B76E8F063E79353D4AADB3F0EA80A48A023998C00,-024C746B98B3834298104EB5582A966E8715673C5AB24CCA20457B12E95959ECF5,031409D41454F2024E32493EC3612E053A18282665B2F7D1FF459FF369C302A479
+    ec_pt_a = PyNakasendo.PyECPoint(714)
+    ec_pt_a.FromHex("039381238A139463E2AC961E4B76E8F063E79353D4AADB3F0EA80A48A023998C00")
+    ec_pt_b = PyNakasendo.PyECPoint(714)
+    ec_pt_b.FromHex("-024C746B98B3834298104EB5582A966E8715673C5AB24CCA20457B12E95959ECF5")
+    ec_pt_res_file = PyNakasendo.PyECPoint(714)
+    ec_pt_res_file.FromHex("031409D41454F2024E32493EC3612E053A18282665B2F7D1FF459FF369C302A479")
+
+    print(f'pt_a -> {ec_pt_a.ToHex()} + pt_b -> {ec_pt_b.ToHex()}')
+
+
+    ec_pt_no_param = PyNakasendo.PyECPoint()
+    ec_pt_no_param.SetRandom()
+    print(f'Random EC point defaulted to secp256k1-> {ec_pt_no_param}')
+    
 if __name__ == "__main__":
     main()
     main_ec()

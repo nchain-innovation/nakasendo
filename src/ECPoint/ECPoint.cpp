@@ -104,9 +104,6 @@ ECPoint operator+ (const ECPoint& obj1, const ECPoint& obj2){
     if (! EC_POINT_add(gp.get(), ec.get(), obj1.m_ec.get(), obj2.m_ec.get(), ctxptr.get()))
         throw std::runtime_error("error : Failed to add EC POINTs");
 
-    std::cout << " ECPint operator+ before constructing result -> " 
-                << EC_POINT_point2hex(gp.get(), ec.get(), POINT_CONVERSION_COMPRESSED, ctxptr.get()) 
-                << std::endl; 
     ECPoint res(gp,ec,obj1.GroupNid()); 
     return res; 
 }

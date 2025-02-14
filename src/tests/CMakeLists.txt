@@ -7,7 +7,12 @@ set(ECPOINT_LIB ${CMAKE_BINARY_DIR}/src/ECPoint/libECPoint.a)
 add_executable(test_ec_point test_ECPoints.cc)
 target_link_libraries(test_ec_point GTest::gtest_main pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB})
 
+set(POLYNOMIAL_LIB ${CMAKE_BINARY_DIR}/src/Polynomial/libPolynomial.a)
+add_executable(test_polynomial test_Polynomial.cc)
+target_link_libraries(test_polynomial GTest::gtest_main pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB} ${POLYNOMIAL_LIB})
+
 include(GoogleTest)
 # Discover individual test cases and register them with CTest
 gtest_discover_tests(test_big_numbers)
 gtest_discover_tests(test_ec_point)
+gtest_discover_tests(test_polynomial)

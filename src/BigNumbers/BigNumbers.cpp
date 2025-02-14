@@ -138,8 +138,11 @@ std::vector<uint8_t> BigNumber::ToBin () const
 }
 
 std::string BigNumber::generateRandHex(const int& nsize){
-     if (!BN_rand(m_bn.get(), nsize, 0,0))
-        throw std::runtime_error("error generating random number"); 
+    if (!BN_rand(m_bn.get(), nsize, 0,0)){
+        std::stringstream msg ; 
+        msg << "error generating random number of size -> " << nsize; 
+        throw std::runtime_error(msg.str()); 
+    }
     return ToHex ();
 } 
 
