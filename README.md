@@ -20,3 +20,5 @@ make test
 cd src/python
 ./tests.sh
 ```
+
+# Quick test
