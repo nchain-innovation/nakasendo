@@ -30,7 +30,11 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(src/BigNumbers)
 add_subdirectory(src/ECPoint) 
 add_subdirectory(src/Polynomial)
+add_subdirectory(src/AsymKey)
+add_subdirectory(src/Utils)
 add_subdirectory(src/python_bindings)
 add_subdirectory(src/tests)
+
+add_subdirectory(src/examples)
 
 

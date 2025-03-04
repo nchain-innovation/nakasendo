@@ -42,4 +42,9 @@ def main_ec() -> None:
 if __name__ == "__main__":
     main()
     main_ec()
+    print('Testing BigNumber constructor')
+    test_val = 123456789012345678901234567890
+    val = PyNakasendo.PyIntToBigNumber(123456789012345678901234567890)
+    print(val.ToDec())
+
     print('Ending')

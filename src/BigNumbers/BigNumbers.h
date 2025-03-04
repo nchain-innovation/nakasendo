@@ -116,12 +116,16 @@ BigNumber GenerateRandRange(const BigNumber& min, const BigNumber& max,const int
 
 BigNumber GenerateRandPrime(const int& nsize = 512);
 
+
 // Explicitly declare the friend functions (to help the export to PyBind11) in the same namespace as BigNumber ()
 BigNumber Inv_mod(const BigNumber& crARG, const BigNumber& crMod);
 BigNumber Add_mod(const BigNumber&  crLHS, const BigNumber&  crRHS, const BigNumber&  crMod);
 BigNumber Sub_mod (const BigNumber&  crLHS, const BigNumber&  crRHS, const BigNumber&  crMod);
 BigNumber Mul_mod (const BigNumber&  crLHS, const BigNumber&  crRHS, const BigNumber&  crMod);
 BigNumber Div_mod (const BigNumber&  crLHS, const BigNumber&  crRHS, const BigNumber&  crMod);
+
+std::unique_ptr<unsigned char []> S256HashMsgToChar(const std::string&,  size_t&);
+
 #endif //ifndef __BIG_NUMBERS_H__
 
 

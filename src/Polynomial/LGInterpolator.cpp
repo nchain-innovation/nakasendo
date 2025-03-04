@@ -151,6 +151,13 @@ BigNumber LGECInterpolator::operator()(const int& i, const BigNumber& xValue){
     return internalVal; 
 }
 
+std::ostream& operator<<(std::ostream& output, const LGECInterpolator& obj){
+    for(std::vector<std::pair<BigNumber, ECPoint>>::const_iterator testIter = obj.m_Points.begin(); testIter != obj.m_Points.end(); ++ testIter){
+        output << "x= " << testIter->first.ToHex() << "\tf(x)= " << testIter->second.ToHex() << std::endl;
+    }
+    return output;
+}
+
 template<typename T>
 BigNumber evalLi (const int& i, const BigNumber& xValue, const T& Points, const BigNumber& modulo){
     BigNumber mul;

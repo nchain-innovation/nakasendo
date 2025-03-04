@@ -488,3 +488,24 @@ BigNumber GenerateRandPrime(const int& size){
     return res;
 }
 
+std::unique_ptr<unsigned char []> S256HashMsgToChar(const std::string& hashedmsg,size_t& digestlen){ 
+    BN_ptr bn(BN_new(), ::BN_free);
+    BIGNUM * ptr = bn.get () ; 
+    BN_hex2bn(&ptr, hashedmsg.c_str());
+    size_t len = BN_num_bytes(bn.get());
+    std::unique_ptr<unsigned char []> binBn(new unsigned char[len]); 
+    size_t ret = BN_bn2bin(bn.get(), binBn.get());
+    std::unique_ptr<unsigned char []> msgHashBin(new unsigned char[ret]);
+    for(int i=0;i<ret;++i){
+        msgHashBin.get()[i] = binBn.get()[i];
+    }
+#if 1
+    std::cout << "S256HashMsgToChar -> str rep of the binary hash -> "; 
+    for (size_t i = 0; i < ret; i++) {
+        printf("%02x", msgHashBin.get()[i]);
+    }
+    std::cout << std::endl;
+#endif
+    digestlen = ret; 
+    return msgHashBin;
+}

@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h> 
 #include <BigNumbers/BigNumbers.h>
-
+#include <bignum_helper.h>
 
 void register_bignum_bindings(pybind11::module_ &m){
     pybind11::class_<BigNumber>(m, "PyBigNumber")
@@ -45,5 +45,7 @@ void register_bignum_bindings(pybind11::module_ &m){
     m.def("GenerateOne", &GenerateOne, "Generate a BigNumber with the value of one");
     m.def("GenerateZero", &GenerateZero, "Generate a BigNumber with the value of zero");
     m.def("GenerateRandRange", &GenerateRandRange, "Generate a BigNumber within a range");
-    m.def("GenerateRandPrime", &GenerateRandPrime, "Generate a Random prime of size 512");
+    m.def("GenerateRandPrime", &GenerateRandPrime, pybind11::arg("nsize") = 512, "Generate a Random prime default is 512 bits");
+    m.def("GenerateRand", &GenerateRand,  pybind11::arg("nsize") = 512, "Generate a Random number default is 512 bits");
+    m.def("PyIntToBigNumber", &PyIntToBigNumber, "Generate a BigNumber from a python integer");
 }

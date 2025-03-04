@@ -19,7 +19,6 @@ using EC_POINT_ptr = std::unique_ptr< EC_POINT, decltype(&EC_POINT_free) >;
 using CurveList = std::vector<std::tuple<int, std::string, std::string>>;
 using CTX_ptr = std::unique_ptr<BN_CTX, decltype(&::BN_CTX_free)>;
 
-//class __attribute__((visibility("default"))) ECPoints
 class ECPoint
 {
     friend ECPoint operator+ (const ECPoint&, const ECPoint&);
@@ -62,6 +61,7 @@ class ECPoint
         bool FromDec(const std::string& decStr, int nid=-1) ;
 
         std::pair<BigNumber, BigNumber> GetAffineCoords () const ;
+        void SetAffineCoords(const std::pair<BigNumber, BigNumber>&); 
 
         BigNumber getECGroupOrder() const;
         int getECGroupDegree() const;

@@ -201,6 +201,15 @@ std::pair<BigNumber, BigNumber> ECPoint::GetAffineCoords () const{
     return std::make_pair(x_cord, y_cord);
 }
 
+void ECPoint::SetAffineCoords(const std::pair<BigNumber, BigNumber>& pts){
+
+    auto& [x, y] = pts; // structured binding. C++17 feature
+    EC_POINT_set_affine_coordinates(m_gp.get(), m_ec.get(), x.bn_ptr().get(), y.bn_ptr().get(), NULL);
+    if(!this->CheckOnCurve())
+        throw std::runtime_error("error: Point not on curve for SetAffineCoords");
+    return; 
+}
+
 /*
 An EC Point is a point (X, Y)
 Its serialization is 04+X+Y as uncompressed, and (02+X as compressed if Y is even), and (03+X as compressed if Y is odd). X and Y are here the corresponding 64-character hexadecimal string

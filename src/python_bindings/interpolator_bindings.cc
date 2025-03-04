@@ -10,7 +10,7 @@
 
 
 void register_lginterpolator_bindings(pybind11::module_ &m){
-    pybind11::class_<LGInterpolator>(m, "PyLGInterpolator>")
+    pybind11::class_<LGInterpolator>(m, "PyLGInterpolator")
         .def(pybind11::init<std::vector<std::pair<BigNumber,BigNumber>>&, const BigNumber&>())
         .def("__call__", 
             pybind11::overload_cast<const BigNumber&>(&LGInterpolator::operator()), pybind11::arg("x"))
@@ -28,7 +28,7 @@ void register_lginterpolator_bindings(pybind11::module_ &m){
 }
 
 void register_lgecinterpolator_bindings(pybind11::module_ &m){
-    pybind11::class_<LGECInterpolator>(m, "PyLGECInterpolator>")
+    pybind11::class_<LGECInterpolator>(m, "PyLGECInterpolator")
         .def(pybind11::init<std::vector<std::pair<BigNumber, ECPoint>>&, const BigNumber&>())
         .def("__call__",
             pybind11::overload_cast<const BigNumber&, const int&>(&LGECInterpolator::operator()),
