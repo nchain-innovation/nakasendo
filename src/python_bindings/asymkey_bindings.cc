@@ -42,6 +42,8 @@ void register_asymkey_bindings(pybind11::module_ &m){
             return std::make_tuple(result.first, result.second);
         }, pybind11::arg("msg"),
         "Sign a SHA-256 message as raw bytes and return (r, s).")
+        .def("DH_SharedSecret", &AsymKey::DH_SharedSecret, pybind11::arg("pubkey_pem"),
+        "Derive a DH shared secret given a public key")
         .def("__repr__",
             [](const AsymKey &key) {
                 std::ostringstream oss;
@@ -73,7 +75,9 @@ void register_asymkey_bindings(pybind11::module_ &m){
     }, pybind11::arg("msg"), pybind11::arg("public_key_pem"), pybind11::arg("rs"),
     "Verify a SHA-256 signed message given public key and signature (r, s).");
 
-    AsymKey FromBigNumber(const BigNumber&, const int& curveID=714); 
     asymkey_module.def("FromBigNumber", &FromBigNumber, pybind11::arg("bn_priv"), pybind11::arg("curveID")=714,
     "Create an AsymKey from a set of shares created on a curve");
+
+    asymkey_module.def("derive_new_key", &derive_new_key, pybind11::arg("key"), pybind11::arg("msg"),
+    "Derive a new AsymKey given an Asymkey and string to add to it (WP42)"); 
 }

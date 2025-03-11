@@ -268,14 +268,47 @@ TEST(AsymKeyTest, test_private_key_split){
         // try to recover the secret
         
         AsymKey recoveredkey = recover(shareSample, 714); 
-        
+        EXPECT_TRUE(recoveredkey.is_valid());
         EXPECT_EQ(recoveredkey.exportPrivateKey(), randomKey.exportPrivateKey()); 
-        
-        //BOOST_TEST (recoveredkey.exportPrivateHEX () == randomKey.exportPrivateHEX()); 
         
     }
     
 }
+
+TEST(AsymKeyTest, test_SharedSecret){   
+    // Test a few iteration with keys randomly generated
+    const size_t nbIter = 10;
+    for (size_t i = 0; i < nbIter; ++i){
+        const AsymKey alice_key;
+        const AsymKey bob_key;
+
+        const std::string alice_pub_key = alice_key.exportPublicKeyPEM();
+        const std::string bob_pub_key = bob_key.exportPublicKeyPEM();
+
+        const BigNumber shared_secret_from_bob = bob_key.DH_SharedSecret(alice_pub_key);
+        const BigNumber shared_secret_from_alice = alice_key.DH_SharedSecret(bob_pub_key);
+        EXPECT_EQ(shared_secret_from_bob, shared_secret_from_alice);
+    }
+}
+
+TEST(AsymKeyTest, test_key_derive_wp0042){   
+    // Test a few iteration with keys randomly generated
+    const size_t nbIter = 10;
+    size_t nbFailed{0};
+    for (size_t i = 0; i < nbIter; ++i)
+    {
+        const std::string additive_msg{ "I am a random message, hash me to get a big number" };
+        const AsymKey alice_key;
+        const AsymKey bob_key;
+
+        const AsymKey alice_derived_key = derive_new_key(alice_key, additive_msg);
+        EXPECT_TRUE(alice_derived_key.is_valid());
+
+        const AsymKey bob_derived_key = derive_new_key(bob_key, additive_msg);
+        EXPECT_TRUE(bob_derived_key.is_valid());
+    }
+}
+
 #if 0 
 BOOST_AUTO_TEST_CASE(test_SigEx_Verify)
 {
@@ -356,24 +389,6 @@ BOOST_AUTO_TEST_CASE(test_Sig_DER_Verify_Random)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_SharedSecret)
-{   
-    // Test a few iteration with keys randomly generated
-    const size_t nbIter = 10;
-    for (size_t i = 0; i < nbIter; ++i)
-    {
-        const AsymKey alice_key;
-        const AsymKey bob_key;
-
-        const std::string alice_pub_key = alice_key.exportPublicPEM();
-        const std::string bob_pub_key = bob_key.exportPublicPEM();
-
-        const std::string shared_secret_from_bob = bob_key.exportSharedSecretHex(alice_pub_key);
-        const std::string shared_secret_from_alice = alice_key.exportSharedSecretHex(bob_pub_key);
-        BOOST_CHECK(!shared_secret_from_bob.empty());
-        BOOST_CHECK(shared_secret_from_bob == shared_secret_from_alice);
-    }
-}
 
 BOOST_AUTO_TEST_CASE(test_key_derive_wp0042)
 {   

@@ -49,6 +49,8 @@ class AsymKey
         std::string exportPublicKeyPEM() const; 
         std::string exportPrivateKeyPEM() const; 
 
+        BigNumber DH_SharedSecret(const std::string&) const; 
+
         //void importPrivateKeyPEM(const std::string&);
         //void importPrivateKey(const BigNumber&);
 
@@ -109,6 +111,11 @@ std::unique_ptr<unsigned char[]> DEREncodedSignature(const BigNumber&, const Big
 
 std::vector<KeyShare> split (const AsymKey&, const int&, const int&);
 AsymKey recover (const std::vector<KeyShare>&, const int&); 
+
+// wp42
+AsymKey derive_new_key(const AsymKey&, const std::string&);
+
+
 
 #if 0 
 AsymKey_API bool verify(const std::string& crMsg, const std::string& crPublicKeyPEMStr, const std::pair<std::string, std::string>& rs, const int& );

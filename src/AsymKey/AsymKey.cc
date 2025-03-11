@@ -106,16 +106,17 @@ bool AsymKey::is_valid() const {
         return false;
     }
 
+    if (EVP_PKEY_private_check(pkey_ctx.get()) != 1) {
+        std::cerr << "EVP_PKEY_private_check failed" << std::endl;
+        return false;
+    }
+
     // Check public key validity
     if (EVP_PKEY_public_check(pkey_ctx.get()) != 1) {
         std::cerr << "EVP_PKEY_public_check failed" << std::endl;
         return false;
     }
 
-    if (EVP_PKEY_private_check(pkey_ctx.get()) != 1) {
-        std::cerr << "EVP_PKEY_private_check failed" << std::endl;
-        return false;
-    }
 
     if (!EVP_PKEY_is_a(m_key.get(), "EC"))
         throw std::runtime_error("Generated key is not EC!");
@@ -411,6 +412,42 @@ std::pair<BigNumber, BigNumber> AsymKey::sign_S256_bytes(const std::unique_ptr<u
     s_ptr.bn_ptr().reset(BN_dup(s_raw)); 
     return {r_ptr, s_ptr};  // Return r and s
 }
+
+BigNumber AsymKey::DH_SharedSecret(const std::string& pubkey_pem) const{
+    BIO_ptr bio(BIO_new(BIO_s_mem()), &BIO_free_all);
+    const int bio_write_ret = BIO_write(bio.get(), static_cast<const char*>(pubkey_pem.c_str()), (int)pubkey_pem.size());
+    if (bio_write_ret <= 0)
+        throw std::runtime_error("Error reading PEM string");
+
+    // Read the PEM public key into EVP_PKEY
+    pkey_ptr pkey_peer (PEM_read_bio_PUBKEY(bio.get(), nullptr, nullptr, nullptr), EVP_PKEY_free); 
+    if(!pkey_peer)
+        throw std::runtime_error("Error reading public key"); 
+
+    EVP_PKEY_CTX_ptr pkey_ctx(EVP_PKEY_CTX_new(m_key.get(), nullptr), EVP_PKEY_CTX_free);
+    if(!pkey_ctx)
+        throw std::runtime_error("Failed to create EVP_PKEY_CTX for EC");
+
+    if (EVP_PKEY_derive_init(pkey_ctx.get()) <= 0) 
+        throw std::runtime_error("EVP_PKEY_derive_init failed");
+
+    if (EVP_PKEY_derive_set_peer(pkey_ctx.get(), pkey_peer.get()) <= 0) 
+        throw std::runtime_error("EVP_PKEY_derive_set_peer failed");
+    
+    size_t secret_len = 0;
+    if (EVP_PKEY_derive(pkey_ctx.get(), NULL, &secret_len) <= 0) 
+        throw std::runtime_error("EVP_PKEY_derive failed to determine secret length");
+    
+    std::unique_ptr<unsigned char[]> shared_secret(new unsigned char[secret_len]); 
+    //std::vector<unsigned char> shared_secret(secret_len);
+    if (EVP_PKEY_derive(pkey_ctx.get(), shared_secret.get(), &secret_len) <= 0) 
+        throw std::runtime_error("EVP_PKEY_derive failed");
+    
+    BigNumber return_secret; 
+    return_secret.FromBin(shared_secret.get(), secret_len); 
+    return return_secret; 
+    
+} 
 // free functions
 AsymKey FromPemStr(const std::string& crPEMStr){
     BIO_ptr bio(BIO_new(BIO_s_mem()), &BIO_free_all);
@@ -449,9 +486,23 @@ AsymKey FromBigNumber(const BigNumber& bn_priv, const int& curveID){
     // the bytes in little-endian format (that's how EVP_PKEY is represented internally)
     std::reverse(priv_key.begin(), priv_key.end());
 
+    // public key
+    EC_GROUP_ptr gp(EC_GROUP_new_by_curve_name(curveID), &EC_GROUP_free);
+    EC_POINT_ptr pEC_POINT(EC_POINT_new(gp.get()), &EC_POINT_free);
+    BN_CTX_ptr pCTX_mul(BN_CTX_new(), &BN_CTX_free);
+    if (!EC_POINT_mul(gp.get(), pEC_POINT.get(), bn_priv.bn_ptr().get(), nullptr, nullptr, pCTX_mul.get()))
+        throw std::runtime_error("Unable to calculate public key");
+    
+    size_t buf_len = EC_POINT_point2oct(gp.get(), pEC_POINT.get(), POINT_CONVERSION_UNCOMPRESSED, NULL, 0, NULL);
+    std::unique_ptr<unsigned char[]> pub_key_bytes(new unsigned char[buf_len]); 
+    
+    if (EC_POINT_point2oct(gp.get(), pEC_POINT.get(), POINT_CONVERSION_UNCOMPRESSED, pub_key_bytes.get(), buf_len, NULL) == 0) {
+        throw std::runtime_error("Failed to convert EC_POINT to bytes");
+    }
     OSSL_PARAM params[] = {
         OSSL_PARAM_construct_utf8_string(OSSL_PKEY_PARAM_GROUP_NAME, (char*)curve_name, 0),
         OSSL_PARAM_construct_BN(OSSL_PKEY_PARAM_PRIV_KEY, priv_key.data(), bn_size),
+        OSSL_PARAM_construct_octet_string(OSSL_PKEY_PARAM_PUB_KEY, pub_key_bytes.get(), buf_len),
         OSSL_PARAM_END
     };
     
@@ -463,6 +514,7 @@ AsymKey FromBigNumber(const BigNumber& bn_priv, const int& curveID){
         ERR_print_errors_fp(stderr);
         throw std::runtime_error("Error: Failed to set EC Private key"); 
     }
+
     return std::move(AsymKey(pkey_ptr)); 
 }
 
@@ -766,6 +818,23 @@ AsymKey recover (const std::vector<KeyShare>& ks, const int& groupID){
     std::cout << "recovered key recover function -> " << key.exportPrivateKey().ToHex() << std::endl; 
     //return FromBigNumber(secret, groupID);
     return key; 
+}
+
+AsymKey derive_new_key(const AsymKey& key, const std::string& msg){
+    size_t msgLen(-1); 
+    std::unique_ptr<unsigned char []> hashed_msg =  hash_msg_str(msg,msgLen);
+    if(msgLen == -1)
+        throw std::runtime_error("Unable to hash message for additive big number");
+    BN_ptr msg_bn(BN_bin2bn(hashed_msg.get(),msgLen,NULL), BN_free);
+
+    BigNumber key_bn = key.exportPrivateKey(); 
+    BigNumber calc_private_key; 
+    BN_CTX_ptr pCTX_add(BN_CTX_new(), &BN_CTX_free);
+
+    if (!BN_mod_add(calc_private_key.bn_ptr().get(), key_bn.bn_ptr().get(), msg_bn.get(), key.Group_Order().bn_ptr().get(), pCTX_add.get()))
+        throw std::runtime_error("Unable to add big number on ec curve");
+
+    return FromBigNumber(calc_private_key); 
 }
 
 // Explicitly instantiate the template for EVP_sha256 (or other hash functions)

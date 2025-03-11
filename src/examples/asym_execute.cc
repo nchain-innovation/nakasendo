@@ -142,9 +142,22 @@ int main(int argc, char* argv[]){
                     << "recoveredKey -> " << recoveredkey.exportPrivateKey().ToHex() 
                     << std::endl; 
         assert (randomKey.exportPrivateKey().ToHex() == recoveredkey.exportPrivateKey().ToHex() );
+        assert(randomKey.is_valid()); 
+        assert(recoveredkey.is_valid()); 
 #endif
     //}
        
+
+    const std::string additive_msg{ "I am a random message, hash me to get a big number" };
+    const AsymKey alice_key;
+    const AsymKey bob_key;
+
+    const AsymKey alice_derived_key = derive_new_key(alice_key, additive_msg);
+    std::cout << alice_derived_key.exportPrivateKey().ToHex() << std::endl; 
+    assert (alice_derived_key.is_valid());
+
+    const AsymKey bob_derived_key = derive_new_key(bob_key, additive_msg);
+    //EXPECT_TRUE(bob_derived_key.is_valid());
     std::cout << "Finishing" << std::endl; 
     return 0;
 }
