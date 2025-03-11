@@ -9,7 +9,7 @@ set(ASymKey_CPP_FILES # Keep alphabet order
 
 set(ASymKey_SOURCE_FILES ${ASymKey_HPP_FILES_PUBLIC} ${ASymKey_CPP_FILES})
 add_library(ASymKey ${LIBS_BUILD_TYPE} ${ASymKey_SOURCE_FILES})
-target_link_libraries(ASymKey BigNumbers OpenSSL::Crypto OpenSSL::SSL ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(ASymKey BigNumbers OpenSSL::Crypto OpenSSL::SSL ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} Polynomial)
 target_compile_definitions(ASymKey PRIVATE EXPORT_ASymKey)
 set_property(TARGET ASymKey PROPERTY FOLDER "core")
 

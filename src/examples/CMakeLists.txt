@@ -24,10 +24,11 @@ set(ECPOINT_LIB ${CMAKE_BINARY_DIR}/src/ECPoint/libECPoint.a)
 set(POLYNOMIAL_LIB ${CMAKE_BINARY_DIR}/src/Polynomial/libPolynomial.a)
 set(ASYMKEY_LIB ${CMAKE_BINARY_DIR}/src/AsymKey/libASymKey.a)
 set(UTILS_LIB ${CMAKE_BINARY_DIR}/src/Utils/libUtils.a)
+set(SECRET_SPLIT_LIB ${CMAKE_BINARY_DIR}/src/SecretShare/libSecretShare.a)
 
 add_executable(asym_example asym_execute.cc)
 target_include_directories(asym_example PUBLIC ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(asym_example pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB} ${POLYNOMIAL_LIB} ${ASYMKEY_LIB} ${UTILS_LIB})
+target_link_libraries(asym_example pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB} ${POLYNOMIAL_LIB} ${ASYMKEY_LIB} ${UTILS_LIB} ${SECRET_SPLIT_LIB})
 
 
 

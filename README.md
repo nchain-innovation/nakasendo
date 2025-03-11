@@ -1,6 +1,12 @@
 # Nakasendo core library
 This library provides a python and c/c++ implementation of the core features of NChains Nakasendo. 
 
+# Submodules. 
+This project has a github submodule included. Please execute below after cloning the repo.
+
+```bash
+git submodule update --init --recursive
+```
 # To build the c/c++
 ```bash
 mkdir build
@@ -21,4 +27,3 @@ cd src/python
 ./tests.sh
 ```
 
-# Quick test

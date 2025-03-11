@@ -9,8 +9,5 @@ BigNumber PyIntToBigNumber(pybind11::int_ val){
     std::string bytesStr = pyBytes; 
 
     bn.FromBin (reinterpret_cast<unsigned char*>(bytesStr.data()), (int)bytesStr.size()); 
-
-    //BN_bin2bn(reinterpret_cast<const unsigned char*>(bytesStr.data()), bytesStr.size(), bn);
-    //return BigNumber(bn);
     return bn;
 }

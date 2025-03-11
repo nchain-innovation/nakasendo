@@ -5,9 +5,9 @@
 #include <Utils/conversions.h>
 #include <ECPoint/ECPoint.h>
 #include <Polynomial/Polynomial.h>
-//#include <SecretSplit/KeyShare.h>
-//#include <SecretSplit/SecretSplit.h>
-//#include <MessageHash/MessageHash.h>
+#include <Utils/hashing.h>
+#include <SecretShare/KeyShare.h>
+#include <SecretShare/SecretSplit.h>
 
 #include <string>
 #include <vector>
@@ -200,7 +200,7 @@ TEST(AsymKeyTest, test_SigS256_Verify){
     const std::string msg{"Alice want to say hello to Bob"};
     size_t digest_len(0);
 
-    std::unique_ptr<unsigned char[]> hashMsg_ptr = hash_msg<>(msg, digest_len); 
+    std::unique_ptr<unsigned char[]> hashMsg_ptr = hash_msg_str<>(msg, digest_len); 
     std::string hash_msg = binTohexStr(hashMsg_ptr, digest_len);
 
     const int nb_iter = 10;
@@ -221,11 +221,10 @@ TEST(AsymKeyTest, test_SigS256_Verify){
     }
 }
 
-TEST(AsymKeyTest, test_SigRawBytes_Verify)
-{
+TEST(AsymKeyTest, test_SigRawBytes_Verify){
     const std::string msg{"Alice want to say hello to Bob"}; 
     size_t digest_len(0);
-    std::unique_ptr<unsigned char[]> hashMsg_ptr = hash_msg<>(msg, digest_len); 
+    std::unique_ptr<unsigned char[]> hashMsg_ptr = hash_msg_str<>(msg, digest_len); 
     std::string hash_msg_str = binTohexStr(hashMsg_ptr, digest_len);
 
     const int nb_iter = 10;
@@ -245,6 +244,37 @@ TEST(AsymKeyTest, test_SigRawBytes_Verify)
         const bool verify_ok_der = verifyDER_S256_str(hash_msg_str, pubkey, sigDERTestWithHash, len);
         EXPECT_TRUE(verify_ok_der);
     }
+}
+
+TEST(AsymKeyTest, test_private_key_split){
+    AsymKey randomKey;
+    int t=5;
+    int k=7;
+    std::vector<KeyShare> shares = split(randomKey,t,k); 
+   
+    //pick 10 different sets of 10 shares and try to recreate the key
+    for (int i=0; i < 100; ++i){
+        std::vector<KeyShare> shareSample;
+        std::set<int> chosenNums; 
+        
+        while (shareSample.size () < t ){
+            int index = rand() % (shares.size()-1) ; 
+            if ( chosenNums.find(index) == chosenNums.end()){
+                chosenNums.insert(index);
+                shareSample.push_back(shares.at(index)); 
+            }
+        }
+        
+        // try to recover the secret
+        
+        AsymKey recoveredkey = recover(shareSample, 714); 
+        
+        EXPECT_EQ(recoveredkey.exportPrivateKey(), randomKey.exportPrivateKey()); 
+        
+        //BOOST_TEST (recoveredkey.exportPrivateHEX () == randomKey.exportPrivateHEX()); 
+        
+    }
+    
 }
 #if 0 
 BOOST_AUTO_TEST_CASE(test_SigEx_Verify)

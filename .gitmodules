@@ -1,0 +1,3 @@
+[submodule "src/tools/toml11"]
+	path = src/tools/toml11
+	url = https://github.com/ToruNiina/toml11.git

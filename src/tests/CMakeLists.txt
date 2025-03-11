@@ -13,9 +13,15 @@ target_link_libraries(test_polynomial GTest::gtest_main pthread OpenSSL::Crypto 
 
 set(ASYMKEY_LIB ${CMAKE_BINARY_DIR}/src/AsymKey/libASymKey.a)
 set(UTILS_LIB ${CMAKE_BINARY_DIR}/src/Utils/libUtils.a)
+set(SECRET_SPLIT_LIB ${CMAKE_BINARY_DIR}/src/SecretShare/libSecretShare.a)
 
 add_executable(test_asym_key test_AsymKey.cc)
-target_link_libraries(test_asym_key GTest::gtest_main pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB} ${POLYNOMIAL_LIB} ${ASYMKEY_LIB} ${UTILS_LIB})
+target_link_libraries(test_asym_key GTest::gtest_main pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB} ${POLYNOMIAL_LIB} ${ASYMKEY_LIB} ${UTILS_LIB} ${SECRET_SPLIT_LIB})
+
+
+add_executable(test_secret_split test_SecretSplit.cc)
+target_link_libraries(test_secret_split GTest::gtest_main pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB} ${POLYNOMIAL_LIB} ${ASYMKEY_LIB} ${UTILS_LIB} ${SECRET_SPLIT_LIB})
+
 
 include(GoogleTest)
 # Discover individual test cases and register them with CTest
@@ -23,3 +29,4 @@ gtest_discover_tests(test_big_numbers)
 gtest_discover_tests(test_ec_point)
 gtest_discover_tests(test_polynomial)
 gtest_discover_tests(test_asym_key)
+gtest_discover_tests(test_secret_split)

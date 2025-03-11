@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 
 project(nakasendo_sdk LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -23,6 +23,12 @@ endif()
 # find pybind11
 find_package(pybind11 REQUIRED)
 
+# include the TOML settings
+# Add toml11 as an external library
+add_subdirectory(src/tools/toml11)
+
+# Include toml11 headers
+include_directories(src/tools/toml11)
 # Enable testing
 enable_testing()
 
@@ -32,6 +38,7 @@ add_subdirectory(src/ECPoint)
 add_subdirectory(src/Polynomial)
 add_subdirectory(src/AsymKey)
 add_subdirectory(src/Utils)
+add_subdirectory(src/SecretShare)
 add_subdirectory(src/python_bindings)
 add_subdirectory(src/tests)
 

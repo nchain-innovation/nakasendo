@@ -2,8 +2,9 @@
 #include <BigNumbers/BigNumbers.h>
 #include <Polynomial/Polynomial.h>
 #include <ECPoint/ECPoint.h>
-//#include <SecretSplit/KeyShare.h>
-//#include <SecretSplit/SecretSplit.h>
+#include <Utils/hashing.h>
+#include <SecretShare/KeyShare.h>
+#include <SecretShare/SecretSplit.h>
 
 #include <openssl/ec.h>      // for EC_GROUP_new_by_curve_name, EC_GROUP_free, EC_KEY_new, EC_KEY_set_group, EC_KEY_generate_key, EC_KEY_free
 #include <openssl/ecdsa.h>   // for ECDSA_do_sign, ECDSA_do_verify
@@ -37,61 +38,6 @@ inline void help_openssl_free_uchar(unsigned char* p) { OPENSSL_free(p); }
 
 //using STR_ptr = std::unique_ptr<char, decltype(&help_openssl_free_char)>;//
 using SSL_UCharPtr = std::unique_ptr<unsigned char, decltype(&help_openssl_free_uchar)>;
-
-#if 0 
-std::unique_ptr<unsigned char []> hash_msg(const std::string& input_msg, int& len){
-    EVP_MD_CTX_ptr md_ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free); 
-    if (!md_ctx)
-        throw std::runtime_error("Failed to create EVP_MD_CTX");
-
-     // Initialize digest context with SHA-256
-     if (EVP_DigestInit_ex(md_ctx.get(), EVP_sha256(), nullptr) != 1)
-        throw std::runtime_error("EVP_DigestInit_ex failed");
-
-    std::unique_ptr<unsigned char []> msg (new unsigned char[input_msg.size()]);
-    int index(0);
-    for(std::string::const_iterator iter = input_msg.begin(); iter != input_msg.end(); ++ iter){
-        msg[index++] = *iter;
-    }
-    std::unique_ptr<unsigned char []> digest (new unsigned char[SHA256_DIGEST_LENGTH]);
-    // Update with data
-    if (EVP_DigestUpdate(md_ctx.get(), msg.get(), input_msg.size()) != 1)
-        throw std::runtime_error("EVP_DigestUpdate failed");
-
-     // Finalize and get the hash
-     unsigned int hash_len = 0;
-     if (EVP_DigestFinal_ex(md_ctx.get(), digest.get(), &hash_len) != 1)
-        throw std::runtime_error("EVP_DigestFinal_ex failed");
-
-    len = SHA256_DIGEST_LENGTH;
-    return digest;
-}
-#endif
-
-template <const EVP_MD* (*HashFunc)()>
-std::unique_ptr<unsigned char[]> hash_msg(const std::string& input_msg, size_t& len) {
-    EVP_MD_CTX_ptr md_ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
-    if (!md_ctx)
-        throw std::runtime_error("Failed to create EVP_MD_CTX");
-
-    // Initialize digest context with the chosen hash function
-    if (EVP_DigestInit_ex(md_ctx.get(), HashFunc(), nullptr) != 1)
-        throw std::runtime_error("EVP_DigestInit_ex failed");
-
-    std::unique_ptr<unsigned char[]> digest(new unsigned char[EVP_MAX_MD_SIZE]);
-
-    // Update with data
-    if (EVP_DigestUpdate(md_ctx.get(), input_msg.data(), input_msg.size()) != 1)
-        throw std::runtime_error("EVP_DigestUpdate failed");
-
-    // Finalize and get the hash
-    unsigned int hash_len = 0;
-    if (EVP_DigestFinal_ex(md_ctx.get(), digest.get(), &hash_len) != 1)
-        throw std::runtime_error("EVP_DigestFinal_ex failed");
-
-    len = hash_len;
-    return digest;
-}
 
 AsymKey::AsymKey(): m_key(nullptr, EVP_PKEY_free){
     EVP_PKEY_CTX_ptr pkey_ctx(EVP_PKEY_CTX_new_from_name(NULL, "EC", NULL), EVP_PKEY_CTX_free);
@@ -341,7 +287,6 @@ std::pair<BigNumber, BigNumber> AsymKey::sign(const std::string& input_msg) cons
         throw std::runtime_error("EVP_DigestSignFinal failed to get signature size");
 
     // Finalize signing and get the signature
-    std::cout << "Sig len before called EVP_DigestSignFinal -> " << sig_len << std::endl;
     std::unique_ptr<unsigned char[]> digest(new unsigned char[sig_len]);
     if (EVP_DigestSignFinal(ctx.get(), digest.get(), &sig_len) != 1)
         throw std::runtime_error("EVP_DigestSignFinal failed to get signature data");
@@ -448,7 +393,7 @@ std::pair<BigNumber, BigNumber> AsymKey::sign_S256_bytes(const std::unique_ptr<u
     if (!sig_rs)
         throw std::runtime_error("Failed to decode DER-encoded ECDSA signature"); 
 
-#if 1
+#if 0
         std::cout << "size of the signature (sig_len) -> " << sig_len << std::endl;
         std::cout << "Signature (DER-encoded): ";
         for (size_t i = 0; i < sig_len; i++) {
@@ -489,32 +434,36 @@ AsymKey FromBigNumber(const BigNumber& bn_priv, const int& curveID){
     if(!pkey_ctx)
         throw std::runtime_error("Failed to create EVP_PKEY_CTX for EC");
 
-    if (EVP_PKEY_keygen_init(pkey_ctx.get()) <= 0)
-        throw std::runtime_error("Error: Failed to initialize key generation");
 
-    // Set the curve name
-    if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pkey_ctx.get(), curveID) <= 0)
-        throw std::runtime_error("Error: Failed to set EC curve"); 
-
-    pkey_ptr asym_key_ptr(EVP_PKEY_new(), EVP_PKEY_free);
-    EVP_PKEY* temp_key = asym_key_ptr.get();
-    if (EVP_PKEY_generate(pkey_ctx.get(), &temp_key) <= 0)
-        throw std::runtime_error("Failed to generate EC key");
-    
-    if (!EVP_PKEY_is_a(asym_key_ptr.get(), "EC"))
-        throw std::runtime_error("Generated key is not EC!");
+    // Convert NID to curve name (e.g., "secp256k1")
+    const char* curve_name = OBJ_nid2sn(curveID);
+    if (!curve_name) {
+        std::cerr << "Invalid curve NID" << std::endl;
+        throw std::runtime_error("nvalid curve NID"); 
+    }
 
     size_t bn_size = BN_num_bytes(bn_priv.bn_ptr().get());
+
+    std::vector<u_int8_t> priv_key = bn_priv.ToBin(); 
+    // this reverse is required as when creating a key from bytes, openssl3 expects
+    // the bytes in little-endian format (that's how EVP_PKEY is represented internally)
+    std::reverse(priv_key.begin(), priv_key.end());
+
     OSSL_PARAM params[] = {
-        OSSL_PARAM_BN(OSSL_PKEY_PARAM_PRIV_KEY, bn_priv.bn_ptr().get(), bn_size),
+        OSSL_PARAM_construct_utf8_string(OSSL_PKEY_PARAM_GROUP_NAME, (char*)curve_name, 0),
+        OSSL_PARAM_construct_BN(OSSL_PKEY_PARAM_PRIV_KEY, priv_key.data(), bn_size),
         OSSL_PARAM_END
     };
     
-
-    if (EVP_PKEY_fromdata(pkey_ctx.get(), &temp_key, EVP_PKEY_KEYPAIR, params) <= 0)
+    pkey_ptr pkey_ptr(EVP_PKEY_new(), EVP_PKEY_free); 
+    EVP_PKEY* pkey = pkey_ptr.get();
+    // Generate key from data
+    if (EVP_PKEY_fromdata_init(pkey_ctx.get()) <= 0 || EVP_PKEY_fromdata(pkey_ctx.get(), &pkey, EVP_PKEY_KEYPAIR, params) <= 0) {
+        std::cerr << "Error: Failed to set EC Private Key using EVP_PKEY_fromdata()" << std::endl;
+        ERR_print_errors_fp(stderr);
         throw std::runtime_error("Error: Failed to set EC Private key"); 
-    
-    return std::move(AsymKey(asym_key_ptr)); 
+    }
+    return std::move(AsymKey(pkey_ptr)); 
 }
 
 ECPoint pubkey_pem2hex(const std::string& PubPEMkey){
@@ -599,10 +548,10 @@ bool verify(const std::string& crMsg, const std::string& crPublicKeyPEMStr, cons
         throw std::runtime_error("EVP_DigestVerifyUpdate failed"); 
 
     if (EVP_DigestVerifyFinal(ctx.get(), der_sig_ptr.get(),der_len) == 1){
-        std::cout << "Signature verification successful\n";
+        //std::cout << "Signature verification successful\n";
         return true;
     } else {
-        std::cerr << "Signature verification failed\n";
+        //std::cerr << "Signature verification failed\n";
         return false;
     }
 }
@@ -787,8 +736,39 @@ std::unique_ptr<unsigned char[]> DEREncodedSignature(const BigNumber& r, const B
     return std::move(der_sig_ptr);
 }
 
+std::vector<KeyShare> split (const AsymKey& key, const int& threshold, const int& maxshares){
+    BigNumber number = key.exportPrivateKey();
+    BigNumber mod = key. Group_Order();
+    int degree = threshold-1;
+    Polynomial poly(degree, mod, number);
+    std::vector<KeyShare> shares = make_shared_secret (poly, threshold, maxshares);
+    return shares; 
+}
+AsymKey recover (const std::vector<KeyShare>& ks, const int& groupID){
+    BigNumber mod; 
+    EC_GROUP_ptr gp(EC_GROUP_new_by_curve_name(groupID), &EC_GROUP_free); 
+    //BIGNUM_ptr mod_ptr(EC_GROUP_get0_order(gp.get())); 
+    const BIGNUM *order = EC_GROUP_get0_order(gp.get());
+    mod.bn_ptr().reset(BN_dup(order)); 
+    //mod_ptr = EC_GROUP_get0_order(gp.get());
+    std::cout << mod.ToHex() << std::endl; 
+    BigNumber secret; 
+    secret.Zero(); 
+    try{
+        secret = RecoverSecret(ks, mod); 
+    }
+    catch(std::exception& err){
+        throw;
+    }
+
+    std::cout << "recovered secret -> " << secret.ToHex() << std::endl;
+    AsymKey key = FromBigNumber(secret, groupID);
+    std::cout << "recovered key recover function -> " << key.exportPrivateKey().ToHex() << std::endl; 
+    //return FromBigNumber(secret, groupID);
+    return key; 
+}
 
 // Explicitly instantiate the template for EVP_sha256 (or other hash functions)
-template std::unique_ptr<unsigned char[]> hash_msg<EVP_sha256>(const std::string& input_msg, size_t& len);
+//template std::unique_ptr<unsigned char[]> hash_msg<EVP_sha256>(const std::string& input_msg, size_t& len);
 
 

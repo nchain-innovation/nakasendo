@@ -7,6 +7,9 @@ void register_ecpoint_bindings(pybind11::module_ &m);
 void register_polynomial_bindings(pybind11::module_ &m); 
 void register_lginterpolator_bindings(pybind11::module_ &m); 
 void register_lgecinterpolator_bindings(pybind11::module_ &m);
+void register_asymkey_bindings(pybind11::module_ &m); 
+void register_utils_bindings(pybind11::module_ &m); 
+void register_secretshare_bindings(pybind11::module_ &m); 
 
 PYBIND11_MODULE(PyNakasendo, m){
     register_bignum_bindings(m); 
@@ -14,4 +17,7 @@ PYBIND11_MODULE(PyNakasendo, m){
     register_polynomial_bindings(m); 
     register_lginterpolator_bindings(m); 
     register_lgecinterpolator_bindings(m); 
+    register_asymkey_bindings(m); 
+    register_utils_bindings(m);
+    register_secretshare_bindings(m); 
 }

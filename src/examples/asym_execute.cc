@@ -1,7 +1,13 @@
 #include <iostream>
+#include <set>
+#include <vector>
 #include <AsymKey/AsymKey.h>
 #include <ECPoint/ECPoint.h>
 #include <Utils/conversions.h>
+#include <SecretShare/KeyShare.h>
+#include <SecretShare/SecretSplit.h>
+
+#include <Utils/hashing.h>
 #include <openssl/objects.h>
 #include <openssl/ec.h>
 #include <openssl/crypto.h>
@@ -81,7 +87,7 @@ int main(int argc, char* argv[]){
     std::cout << "Creating HASH first " << std::endl; 
     //const std::string msg{"Alice want to say hello to Bob"};
     size_t digest_len(0);
-    std::unique_ptr<unsigned char[]> hashMsg_ptr = hash_msg<>(msg, digest_len); 
+    std::unique_ptr<unsigned char[]> hashMsg_ptr = hash_msg_str<>(msg, digest_len); 
     std::string hashmsg_str =  binTohexStr(hashMsg_ptr, digest_len); 
     std::cout << hashmsg_str << std::endl;
 #if 0
@@ -109,6 +115,36 @@ int main(int argc, char* argv[]){
     }
 
 
+    std::cout << "key splitting & recover" << std::endl; 
+    AsymKey randomKey;
+    int t=5;
+    int k=7;
+    std::vector<KeyShare> shares = split(randomKey,t,k); 
+    
+    //pick 10 different sets of 10 shares and try to recreate the key
+    //for (int i=0; i < 100; ++i){
+#if 1 
+        std::vector<KeyShare> shareSample;
+        std::set<int> chosenNums; 
+        
+        while (shareSample.size () < t ){
+            int index = rand() % (shares.size()-1) ; 
+            if ( chosenNums.find(index) == chosenNums.end()){
+                chosenNums.insert(index);
+                shareSample.push_back(shares.at(index)); 
+            }
+        }
+        
+        // try to recover the secret
+        std::cout << "randomKey -> " << randomKey.exportPrivateKey().ToHex() << std::endl; 
+        AsymKey recoveredkey = recover(shareSample, 714); 
+        std::cout << "randomKey -> " << randomKey.exportPrivateKey().ToHex() << "\n"
+                    << "recoveredKey -> " << recoveredkey.exportPrivateKey().ToHex() 
+                    << std::endl; 
+        assert (randomKey.exportPrivateKey().ToHex() == recoveredkey.exportPrivateKey().ToHex() );
+#endif
+    //}
+       
     std::cout << "Finishing" << std::endl; 
     return 0;
 }

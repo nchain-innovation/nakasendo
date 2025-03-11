@@ -1,10 +1,14 @@
 
 set(Utils_HPP_FILES_PUBLIC # Keep alphabet order
     ${CMAKE_CURRENT_SOURCE_DIR}/conversions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/hashing.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/kdf.h
 )
 
 set(Utils_CPP_FILES # Keep alphabet order
     ${CMAKE_CURRENT_SOURCE_DIR}/conversions.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/hashing.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/kdf.cc
 )
 
 set(Utils_SOURCE_FILES ${Utils_HPP_FILES_PUBLIC} ${Utils_CPP_FILES})

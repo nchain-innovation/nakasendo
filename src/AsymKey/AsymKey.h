@@ -12,15 +12,11 @@
 #include <openssl/pem.h>
 
 class AsymKeyImpl; 
-//class KeyShare; 
+class KeyShare; 
 class BigNumber;
 class ECPoint; 
 
 using pkey_ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
-
-// Template function for hashing messages with a configurable hash function
-template <const EVP_MD* (*HashFunc)() = EVP_sha256>
-std::unique_ptr<unsigned char[]> hash_msg(const std::string& input_msg, size_t& len);
 
 class AsymKey
 {
@@ -109,6 +105,11 @@ bool verify_S256_str(const std::string& crMsg, const std::string& crPublicKeyPEM
 bool verifyDER_S256_str(const std::string& crMsg, const std::string& crPublicKeyPEMStr, const std::unique_ptr<unsigned char[]>&, const size_t&);
 bool verify_S256_bytes(const std::unique_ptr<unsigned char[]>& crMsg, const size_t& crMsgLen, const std::string& crPublicKeyPEMStr, const std::pair<BigNumber, BigNumber>& rs);
 std::unique_ptr<unsigned char[]> DEREncodedSignature(const BigNumber&, const BigNumber&, size_t& len);
+
+
+std::vector<KeyShare> split (const AsymKey&, const int&, const int&);
+AsymKey recover (const std::vector<KeyShare>&, const int&); 
+
 #if 0 
 AsymKey_API bool verify(const std::string& crMsg, const std::string& crPublicKeyPEMStr, const std::pair<std::string, std::string>& rs, const int& );
 AsymKey_API bool verifyDER(const std::string& crMsg, const std::string& crPublicKeyPEMStr, const std::unique_ptr<unsigned char[]>&, const size_t&, const int&);
