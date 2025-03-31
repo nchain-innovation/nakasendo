@@ -12,22 +12,22 @@ class PolynomialTests(unittest.TestCase):
         # evaluate the polynomial at x equal 2.
         # the expression will f(2) = ((3 x 2^4) + (13 x 2^3) + (5 x 2^2) + (2 x 2) + 1) mod 17 = 7
 
-        val1 = PyNakasendo.PyIntToBigNumber(1)
-        val2 = PyNakasendo.PyIntToBigNumber(2)
-        val3 = PyNakasendo.PyIntToBigNumber(5)
-        val4 = PyNakasendo.PyIntToBigNumber(13)
-        val5 = PyNakasendo.PyIntToBigNumber(3)
+        val1 = PyNakasendo.PyBigNumber.PyIntToBigNumber(1)
+        val2 = PyNakasendo.PyBigNumber.PyIntToBigNumber(2)
+        val3 = PyNakasendo.PyBigNumber.PyIntToBigNumber(5)
+        val4 = PyNakasendo.PyBigNumber.PyIntToBigNumber(13)
+        val5 = PyNakasendo.PyBigNumber.PyIntToBigNumber(3)
 
         coefficients = [val1, val2, val3, val4, val5]
-        mod = PyNakasendo.PyIntToBigNumber(17)
+        mod = PyNakasendo.PyBigNumber.PyIntToBigNumber(17)
 
 
         #expcted value is 7 given this polynomial, mod & x value
-        actualValue = PyNakasendo.PyIntToBigNumber(7)
+        actualValue = PyNakasendo.PyBigNumber.PyIntToBigNumber(7)
 
         # create a Polynomial from a list of coefficients
         poly = PyNakasendo.PyPolynomial(coefficients, mod)
-        val_x = PyNakasendo.PyIntToBigNumber(2)
+        val_x = PyNakasendo.PyBigNumber.PyIntToBigNumber(2)
         polynomialFX = poly(val_x)
         assert polynomialFX == actualValue
 
@@ -37,13 +37,13 @@ class PolynomialTests(unittest.TestCase):
         hex_value = 0
         for x in range(10, 15):
 
-            fx = PyNakasendo.GenerateRand(256)
-            modulo = PyNakasendo.GenerateRandPrime(100)
+            fx = PyNakasendo.PyBigNumber.GenerateRand(256)
+            modulo = PyNakasendo.PyBigNumber.GenerateRandPrime(100)
             listCoefficients = []
 
             for i in range(x):
                 # Generate random coefficients for the polynomial
-                listCoefficients.append(PyNakasendo.GenerateRand(256))
+                listCoefficients.append(PyNakasendo.PyBigNumber.GenerateRand(256))
 
             # create a Polynomial from a list of coefficients
             poly = PyNakasendo.PyPolynomial(listCoefficients, modulo)
@@ -52,8 +52,8 @@ class PolynomialTests(unittest.TestCase):
 
     def test_LGECInterpolatorFull(self):
 
-        modulo = PyNakasendo.GenerateRandPrime(1000)
-        xValue = PyNakasendo.GenerateRand(1000)
+        modulo = PyNakasendo.PyBigNumber.GenerateRandPrime(1000)
+        xValue = PyNakasendo.PyBigNumber.GenerateRand(1000)
         listTupleObj = []
         dec = False
 
@@ -61,7 +61,7 @@ class PolynomialTests(unittest.TestCase):
         for x in range(10, 50):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
             curveid: int = 714
-            ec_pt = PyNakasendo.PyECPoint((curveid))
+            ec_pt = PyNakasendo.PyECPoint.PyECPoint((curveid))
             ec_pt.SetRandom()
             #hexValue = Nakasendo.ECPoint(curveid)
 
@@ -70,7 +70,7 @@ class PolynomialTests(unittest.TestCase):
             x_axis, y_axis = ec_pt.GetAffineCoords()
             assert len(x_axis.ToHex()) == 62 or len(x_axis.ToHex()) == 64, "Test failed"
             # EC Point GetAffineCoOrdinates_GFp with default NID => NID_secp256k1
-            bigNumpt = PyNakasendo.PyIntToBigNumber(x)
+            bigNumpt = PyNakasendo.PyBigNumber.PyIntToBigNumber(x)
             listTupleObj.append((bigNumpt, ec_pt))
 
         #lgInterpolatorX = PyPolynomial.LGECInterpolatorFull(listTupleObj, modulo, xValue,dec, curveid)

@@ -158,6 +158,64 @@ int main(int argc, char* argv[]){
 
     const AsymKey bob_derived_key = derive_new_key(bob_key, additive_msg);
     //EXPECT_TRUE(bob_derived_key.is_valid());
+
+    std::cout << "ECPOint Mulipltying weirdness" << std::endl;
+    ECPoint ec1;
+    ec1.SetRandom();
+    
+    BigNumber bnm , bnn;
+    bnm.generateRandHex(1024);
+    bnn.generateRandHex(1024);
+
+    //ECPoint ec2 = ec1.MulHex(bnm.ToHex(), bnn.ToHex());
+    ECPoint ec2 = Multiply(ec1, bnm, bnn); 
+    if(ec2.CheckOnCurve())
+        std::cout << "Point on curve" << std::endl; 
+
+    std::string es;
+    //ECPoint ec3 = ec1.MulHex(bnm.ToHex(), es);
+    ECPoint ec3 = ec1 * bnm; 
+    std::cout << "Random ec3 point -> " << ec3.ToHex() << std::endl; 
     std::cout << "Finishing" << std::endl; 
+
+    //wZeroVal = PyNakasendo.PyECPoint.PyECPoint(714)
+    //wZeroVal.FromHex("03BCCA58F0A0EF48CC007F1B3346833BA1DBAE021E7CCAE4E06768A619AF826FC9")
+
+    //vZeroValInv: PyNakasendo.PyBigNumber.PyBigNumber = PyNakasendo.PyBigNumber.GenerateFromHex("5E652007FFB6B963639596BD3D76A6132CE774E6DF4F194CE4C98C295AF49DC1")
+    //interpolated_r = wZeroVal * vZeroValInv
+    //print(f'interpolated_r -> {interpolated_r}')
+
+    ECPoint wZeroVal(714); 
+    wZeroVal.FromHex("03BCCA58F0A0EF48CC007F1B3346833BA1DBAE021E7CCAE4E06768A619AF826FC9");
+    BigNumber bn; 
+    bn.FromHex("5E652007FFB6B963639596BD3D76A6132CE774E6DF4F194CE4C98C295AF49DC1");
+    ECPoint interpolated_r = wZeroVal * bn; 
+    std::cout << "interpolated_r -> " << interpolated_r.ToHex() << std::endl; 
+
+    //wZeroValTwo = PyNakasendo.PyECPoint.PyECPoint(714)
+    //wZeroValTwo.FromHex("03BF6B57647B6FA3294DC6423F3492786FF2A87D57BEC0674C9E51CED2E9CB742C")
+    //BigNumber bn; : PyNakasendo.PyBigNumber.PyBigNumber = PyNakasendo.PyBigNumber.GenerateFromHex("118698162C9E86A9B53150FF623079BF2AA57EE905855816B838DFCDDA75B4B2")
+    //new_valTwo = wZeroValTwo * vZeroValInvTwo
+    //print(f'new_valTwo -> {new_valTwo}')
+    ECPoint wZeroValTwo(714); 
+    wZeroValTwo.FromHex("03BF6B57647B6FA3294DC6423F3492786FF2A87D57BEC0674C9E51CED2E9CB742C");
+    BigNumber bn2; 
+    bn2.FromHex("118698162C9E86A9B53150FF623079BF2AA57EE905855816B838DFCDDA75B4B2");
+    ECPoint interpolated_r_two = wZeroValTwo * bn2; 
+    std::cout << "interpolated_r_two -> " << interpolated_r_two.ToHex() << std::endl; 
+
+    std::cout << "Generator Point -> " << interpolated_r_two.getGenerator().ToHex() << std::endl;
+
+    BigNumber bnm_to_inv;
+    bnm_to_inv.generateRandHex(256);
+    std::cout << "bnm_to_inv -> " << bnm_to_inv.ToHex() << std::endl; 
+    BigNumber mod_n = GroupOrder(714);
+    std::cout << "mod_n -> " << mod_n.ToHex() << std::endl; 
+    BigNumber bnmInved = Inv_mod(bnm_to_inv, mod_n); 
+    std::cout << "bnmInved -> " << bnmInved.ToHex() << std::endl;
+    ECPoint wZeroValthree (714);
+    wZeroValthree.SetRandom(); 
+    ECPoint interpolated_t_three = wZeroValthree * bnmInved; 
+    std::cout << "interpolated_t_three -> " << interpolated_t_three.ToHex() << std::endl; 
     return 0;
 }

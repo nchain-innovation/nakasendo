@@ -29,7 +29,8 @@ std::vector<KeyShare> make_shared_secret (const Polynomial& poly, const int& min
      
     std::vector<KeyShare> shareValues; 
     shareValues.reserve(shares); 
-    std::ranges::generate_n(
+    //std::ranges::generate_n(
+    std::generate_n(
         std::back_inserter(shareValues), shares, [&, i=1]() mutable{
             BigNumber xValue;
             xValue.FromDec(std::to_string(i));
@@ -61,20 +62,26 @@ BigNumber RecoverSecret ( const std::vector<KeyShare>& shares , const BigNumber&
     std::string uuid = shares.front().publicID();
 
     // Validate all shares belong to the same group
-    if (!std::ranges::all_of(shares, [&](const KeyShare& s) {
+    if(!std::all_of(shares.begin(), shares.end(), [&](const KeyShare& s) {
+    //if (!std::ranges::all_of(shares, [&](const KeyShare& s) {
         return s.k() == k && s.n() == n && s.publicID() == uuid;
     })) {
         throw std::runtime_error("Invalid share provided for share group");
     }
 
     // Transform shares into CurvePoints
+    //std::vector<NewType> transformed;
+    std::transform(shares.begin(), shares.end(), std::back_inserter(curvePoints), [](const KeyShare& s) 
+    { return std::pair<BigNumber, BigNumber>{s.Index(), s.Share()}; });
+
+#if 0
     std::ranges::copy(
         shares | std::views::transform([](const KeyShare& s) {
             return std::pair<BigNumber, BigNumber>{s.Index(), s.Share()};
         }),
         std::back_inserter(curvePoints)
     );
-
+#endif
     if(curvePoints.size() < k){
         throw std::runtime_error("inconsistant number of shares supplied: " + std::to_string(curvePoints.size()) + " less than " + std::to_string(k));
     }

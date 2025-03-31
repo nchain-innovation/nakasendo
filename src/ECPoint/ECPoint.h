@@ -86,4 +86,6 @@ ECPoint MultiplyByGeneratorPt(const BigNumber&, int curveID=714);
 BigNumber GroupOrder(const int&);
 
 ECPoint Multiply(const ECPoint& ec_pt, const BigNumber& m,const BigNumber& n);
+
+ECPoint GenerateECFromHex(const std::string&, const int curveID=714);
 #endif //ifndef _EC_POINT__H__

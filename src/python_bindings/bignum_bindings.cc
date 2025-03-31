@@ -4,7 +4,12 @@
 #include <bignum_helper.h>
 
 void register_bignum_bindings(pybind11::module_ &m){
-    pybind11::class_<BigNumber>(m, "PyBigNumber")
+
+    // Create a submodule for AsymKey-related functions
+    pybind11::module_ sub_module = m.def_submodule("PyBigNumber", "Submodule for BigNum related activity");
+
+
+    pybind11::class_<BigNumber>(sub_module, "PyBigNumber")
         .def(pybind11::init<>()) // bind the constructor
         .def(pybind11::init<const BigNumber&>()) // Copy constructor
         .def("One", &BigNumber::One)
@@ -40,12 +45,16 @@ void register_bignum_bindings(pybind11::module_ &m){
         .def("__repr__",
             [](const BigNumber &a){
                 return a.ToHex();
-            });
+            })
+        .def("__hash__", [](const BigNumber &a) {
+            return std::hash<std::string>{}(a.ToHex());
+        });
         // Wrap the GenerateOne function
-    m.def("GenerateOne", &GenerateOne, "Generate a BigNumber with the value of one");
-    m.def("GenerateZero", &GenerateZero, "Generate a BigNumber with the value of zero");
-    m.def("GenerateRandRange", &GenerateRandRange, "Generate a BigNumber within a range");
-    m.def("GenerateRandPrime", &GenerateRandPrime, pybind11::arg("nsize") = 512, "Generate a Random prime default is 512 bits");
-    m.def("GenerateRand", &GenerateRand,  pybind11::arg("nsize") = 512, "Generate a Random number default is 512 bits");
-    m.def("PyIntToBigNumber", &PyIntToBigNumber, "Generate a BigNumber from a python integer");
+    sub_module.def("GenerateOne", &GenerateOne, "Generate a BigNumber with the value of one");
+    sub_module.def("GenerateZero", &GenerateZero, "Generate a BigNumber with the value of zero");
+    sub_module.def("GenerateFromHex", &GenerateFromHex, pybind11::arg("hexval"), "Create a BigNumber from the hex value"); 
+    sub_module.def("GenerateRandRange", &GenerateRandRange, "Generate a BigNumber within a range");
+    sub_module.def("GenerateRandPrime", &GenerateRandPrime, pybind11::arg("nsize") = 512, "Generate a Random prime default is 512 bits");
+    sub_module.def("GenerateRand", &GenerateRand,  pybind11::arg("nsize") = 512, "Generate a Random number default is 512 bits");
+    sub_module.def("PyIntToBigNumber", &PyIntToBigNumber, "Generate a BigNumber from a python integer");
 }

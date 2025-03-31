@@ -484,13 +484,38 @@ ECPoint operator* (const ECPoint& ec_pt, const BigNumber& bn){
     // Allocate for CTX 
     std::unique_ptr<BN_CTX, decltype(&BN_CTX_free)> ctxptr (BN_CTX_new(), &BN_CTX_free );
     EC_GROUP_ptr gp(EC_GROUP_new_by_curve_name(ec_pt.GroupNid()), &EC_GROUP_free);
-    EC_POINT_ptr ec(EC_POINT_new(gp.get()), &EC_POINT_free); 
+    
 
-    int mul_res = EC_POINT_mul(gp.get(),ec.get(),nullptr,ec_pt.m_ec.get(),bn.bn_ptr().get(), ctxptr.get());
+    EC_POINT * tmp_pt = EC_POINT_new(gp.get()); 
+    EC_POINT * tmp_ec_input = ec_pt.m_ec.get();
+    EC_POINT_ptr ec(EC_POINT_new(gp.get()), &EC_POINT_free); 
+    // Ensure ec is initialized
+    EC_POINT_set_to_infinity(gp.get(), ec.get());
+    std::cout << "Input EC -> "
+        << EC_POINT_point2hex(gp.get(), tmp_ec_input, POINT_CONVERSION_COMPRESSED, ctxptr.get())
+        << "\nInput BN -> "  
+        << BN_bn2hex(bn.bn_ptr().get())
+        << "\nResult before multplying " 
+        << EC_POINT_point2hex(gp.get(), ec.get(), POINT_CONVERSION_COMPRESSED, ctxptr.get())
+        << std::endl; 
+        
+    //int mul_res = EC_POINT_mul(gp.get(),tmp_pt,NULL,ec_pt.m_ec.get(),bn.bn_ptr().get(), ctxptr.get());
+    int mul_res = EC_POINT_mul(gp.get(),tmp_pt,NULL,tmp_ec_input, bn.bn_ptr().get(), ctxptr.get());
+    
     if(!mul_res)
         throw std::runtime_error("failed to multiply EC Point with BIGNUM"); 
-    
+
+    if(!EC_POINT_copy(ec.get(),tmp_pt))
+        throw std::runtime_error("failed tp getECGroup generator point");
+    std::cout << "Return value from EC_POINT_mul -> " << mul_res << std::endl;
+    std::cout << EC_POINT_point2hex(gp.get(), ec.get(), POINT_CONVERSION_COMPRESSED, ctxptr.get()) << std::endl; 
     ECPoint res(gp, ec, ec_pt.GroupNid()); 
     return res; 
+}
+
+ECPoint GenerateECFromHex(const std::string& hexval, const int curveID){
+    ECPoint point(curveID);
+    point.FromHex(hexval);
+    return point; 
 }
 

@@ -471,6 +471,12 @@ BigNumber GenerateZero(){
     return bn;
 }
 
+BigNumber GenerateFromHex(const std::string& hexval){
+    BigNumber bn; 
+    bn.FromHex(hexval);
+    return bn; 
+}
+
 BigNumber GenerateRandRange(const BigNumber& min, const BigNumber& max ,const int& nsize){
     // please note that negative ranges are allowed.
     BigNumber Range = max - min + 1; 

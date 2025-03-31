@@ -5,15 +5,15 @@ from cryptography.hazmat.primitives import hashes
 
 def main() -> None:
     print('Starting BigNum')
-    val = PyNakasendo.PyBigNumber()
+    val = PyNakasendo.PyBigNumber.PyBigNumber()
     val.One()
     print(val)
     val.GenerateRandHex(512)
     print(val)
 
-    val1 = PyNakasendo.PyBigNumber()
+    val1 = PyNakasendo.PyBigNumber.PyBigNumber()
     val1.GenerateRandHex(512)
-    val2 = PyNakasendo.PyBigNumber()
+    val2 = PyNakasendo.PyBigNumber.PyBigNumber()
     val2.GenerateRandHex(512)
 
     val3 = val1 + val2
@@ -28,17 +28,17 @@ def main() -> None:
 def main_ec() -> None:
     print("starting ECPoint")
     #039381238A139463E2AC961E4B76E8F063E79353D4AADB3F0EA80A48A023998C00,-024C746B98B3834298104EB5582A966E8715673C5AB24CCA20457B12E95959ECF5,031409D41454F2024E32493EC3612E053A18282665B2F7D1FF459FF369C302A479
-    ec_pt_a = PyNakasendo.PyECPoint(714)
+    ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
     ec_pt_a.FromHex("039381238A139463E2AC961E4B76E8F063E79353D4AADB3F0EA80A48A023998C00")
-    ec_pt_b = PyNakasendo.PyECPoint(714)
+    ec_pt_b = PyNakasendo.PyECPoint.PyECPoint(714)
     ec_pt_b.FromHex("-024C746B98B3834298104EB5582A966E8715673C5AB24CCA20457B12E95959ECF5")
-    ec_pt_res_file = PyNakasendo.PyECPoint(714)
+    ec_pt_res_file = PyNakasendo.PyECPoint.PyECPoint(714)
     ec_pt_res_file.FromHex("031409D41454F2024E32493EC3612E053A18282665B2F7D1FF459FF369C302A479")
 
     print(f'pt_a -> {ec_pt_a.ToHex()} + pt_b -> {ec_pt_b.ToHex()}')
 
 
-    ec_pt_no_param = PyNakasendo.PyECPoint()
+    ec_pt_no_param = PyNakasendo.PyECPoint.PyECPoint()
     ec_pt_no_param.SetRandom()
     print(f'Random EC point defaulted to secp256k1-> {ec_pt_no_param}')
     
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     main_ec()
     print('Testing BigNumber constructor')
     test_val = 123456789012345678901234567890
-    val = PyNakasendo.PyIntToBigNumber(123456789012345678901234567890)
+    val = PyNakasendo.PyBigNumber.PyIntToBigNumber(123456789012345678901234567890)
     print(val.ToDec())
 
 
@@ -133,5 +133,33 @@ if __name__ == "__main__":
     print("Derived Key (Hex):", key.hex())
     print(f'derived other key (hex): {key1}')
     #print("Derived Key (Base64):", base64.b64encode(key).decode())
+    print('EC Point weirdness')
+    wZeroVal = PyNakasendo.PyECPoint.PyECPoint(714)
+    wZeroVal.FromHex("03BCCA58F0A0EF48CC007F1B3346833BA1DBAE021E7CCAE4E06768A619AF826FC9")
+
+    vZeroValInv: PyNakasendo.PyBigNumber.PyBigNumber = PyNakasendo.PyBigNumber.GenerateFromHex("5E652007FFB6B963639596BD3D76A6132CE774E6DF4F194CE4C98C295AF49DC1")
+    interpolated_r = wZeroVal * vZeroValInv
+    print(f'interpolated_r -> {interpolated_r}')
+
+    ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
+    ec_pt_a.SetRandom()
+    # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
+    assert ec_pt_a.CheckOnCurve()
+    # create a bignumber
+    val1 = PyNakasendo.PyBigNumber.PyBigNumber()
+    val1.GenerateRandHex()
+    new_val = ec_pt_a * val1 
+    print(f'{new_val}')
+    wZeroValTwo = PyNakasendo.PyECPoint.PyECPoint(714)
+    wZeroValTwo.FromHex("03BF6B57647B6FA3294DC6423F3492786FF2A87D57BEC0674C9E51CED2E9CB742C")
+    vZeroValInvTwo: PyNakasendo.PyBigNumber.PyBigNumber = PyNakasendo.PyBigNumber.GenerateFromHex("118698162C9E86A9B53150FF623079BF2AA57EE905855816B838DFCDDA75B4B2")
+    new_valTwo = wZeroValTwo * vZeroValInvTwo
+    print(f'new_valTwo -> {new_valTwo}')
+
+    assert (new_valTwo == interpolated_r)
+    
+
+
+
 
 

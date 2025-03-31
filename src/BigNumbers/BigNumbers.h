@@ -108,6 +108,7 @@ class BigNumber
 
 BigNumber GenerateOne ();
 BigNumber GenerateZero () ;
+BigNumber GenerateFromHex(const std::string&);
 
 BigNumber GenerateRand ( const int& )  ;
 BigNumber GenerateRandNegative (const int&);
