@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 
 
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -18,17 +18,15 @@ if (OPENSSL_FOUND)
     message(STATUS, "OPENSSL LIBRARY -> ${OPENSSL_LIBRARIES}")
 endif()
 
-
-set(BIGNUMBERS_LIB ${CMAKE_BINARY_DIR}/src/BigNumbers/libBigNumbers.a)
-set(ECPOINT_LIB ${CMAKE_BINARY_DIR}/src/ECPoint/libECPoint.a)
-set(POLYNOMIAL_LIB ${CMAKE_BINARY_DIR}/src/Polynomial/libPolynomial.a)
-set(ASYMKEY_LIB ${CMAKE_BINARY_DIR}/src/AsymKey/libASymKey.a)
-set(UTILS_LIB ${CMAKE_BINARY_DIR}/src/Utils/libUtils.a)
-set(SECRET_SPLIT_LIB ${CMAKE_BINARY_DIR}/src/SecretShare/libSecretShare.a)
+link_directories(${CMAKE_BINARY_DIR}/src/BigNumbers
+                ${CMAKE_BINARY_DIR}/src/ECPoint
+                ${CMAKE_BINARY_DIR}/src/Polynomial
+                ${CMAKE_BINARY_DIR}/src/AsymKey
+                ${CMAKE_BINARY_DIR}/src/SecretShare
+                ${CMAKE_BINARY_DIR}/src/Utils)
 
 add_executable(asym_example asym_execute.cc)
 target_include_directories(asym_example PUBLIC ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(asym_example pthread OpenSSL::Crypto ${ECPOINT_LIB} ${BIGNUMBERS_LIB} ${POLYNOMIAL_LIB} ${ASYMKEY_LIB} ${UTILS_LIB} ${SECRET_SPLIT_LIB})
-
+target_link_libraries(asym_example pthread OpenSSL::Crypto  -lASymKey -lSecretShare -lPolynomial -lECPoint -lBigNumbers -lUtils)
 
 
