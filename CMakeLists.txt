@@ -9,6 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+add_compile_options(-fPIC)
 
 # Find Python
 find_package(Python REQUIRED COMPONENTS Development Interpreter)
