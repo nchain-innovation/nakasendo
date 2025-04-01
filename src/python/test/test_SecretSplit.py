@@ -17,7 +17,7 @@ class SecretSplitTests(unittest.TestCase):
             degree: int = threshold -1
             curve_id: int = 714
             # mod 
-            mod = PyNakasendo.PyBigNumber()
+            mod = PyNakasendo.PyBigNumber.PyBigNumber()
             mod.FromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
             # Generate pair of keys in pem format
             privKey = PyNakasendo.PyAsymKey.PyAsymKey(curve_id)
@@ -40,7 +40,7 @@ class SecretSplitTests(unittest.TestCase):
             degree: int = threshold-1
             maxshares: int = 100
             # mod 
-            mod = PyNakasendo.PyBigNumber()
+            mod = PyNakasendo.PyBigNumber.PyBigNumber()
             mod.FromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
             # Generate pair of keys in pem format
             privKey = PyNakasendo.PyAsymKey.PyAsymKey(curve_id)

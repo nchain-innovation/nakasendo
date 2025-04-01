@@ -4,8 +4,15 @@
 #include <ECPoint/ECPoint.h>
 #include <BigNumbers/BigNumbers.h>
 
+
+
 void register_ecpoint_bindings(pybind11::module_ &m){
-    pybind11::class_<ECPoint>(m, "PyECPoint")
+
+    // Create a submodule for ECPoint-related functions
+    pybind11::module_ sub_module = m.def_submodule("PyECPoint", "Submodule for ECPoint related activity");
+
+
+    pybind11::class_<ECPoint>(sub_module, "PyECPoint")
         .def(pybind11::init<>()) // bind the constructor
         .def(pybind11::init<int>()) // bind the constructor that takes an integer
         .def(pybind11::init<const ECPoint&>()) // Copy constructor
@@ -33,9 +40,14 @@ void register_ecpoint_bindings(pybind11::module_ &m){
             [](const ECPoint &a){
                 return a.ToHex();
             });
-    m.def("MultiplyByGeneratorPt", &MultiplyByGeneratorPt, "Multiply BigNumber By GeneratorPr");
-    m.def("GroupOrder", &GroupOrder, "Return the Group Order");
-    m.def("GetCurveList", &getCurveList, "Return a list of curves");
-    m.def("GetNidForString", &getNidForString, "Return a curve NID given a curve name");
-    m.def("Multiply", &Multiply, "Eliptic Curve multiplication G * n + m * q, when m & n are bignumbers and q is an EC Point");
+    
+
+    sub_module.def("MultiplyByGeneratorPt", &MultiplyByGeneratorPt, pybind11::arg("value"), pybind11::arg("curveID") = 714, "Multiply BigNumber By GeneratorPr");
+    sub_module.def("GroupOrder", &GroupOrder, "Return the Group Order");
+    sub_module.def("GetCurveList", &getCurveList, "Return a list of curves");
+    sub_module.def("GetNidForString", &getNidForString, "Return a curve NID given a curve name");
+    sub_module.def("Multiply", &Multiply, "Eliptic Curve multiplication G * n + m * q, when m & n are bignumbers and q is an EC Point");
+
+    //ECPoint GenerateFromHex(const std::string& hexval, const int curveID){
+    sub_module.def("GenerateECFromHex", &GenerateECFromHex, pybind11::arg("hexval"), pybind11::arg("curveID") = 714, "Generate an EC Point from the hexvalue on a given curve");
 }

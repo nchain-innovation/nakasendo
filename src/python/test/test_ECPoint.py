@@ -18,7 +18,7 @@ class ECPointTests(unittest.TestCase):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
             #actual_value = PyECPoint.GenerateRandomEC( 0, hex, True )
             curve_id : int = 714
-            ec_pt = PyNakasendo.PyECPoint((curve_id))
+            ec_pt = PyNakasendo.PyECPoint.PyECPoint((curve_id))
             ec_pt.SetRandom()
             ec_ptr_hex  = ec_pt.ToHex()
   
@@ -29,7 +29,7 @@ class ECPointTests(unittest.TestCase):
     # Generating Random EC Points
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt = PyNakasendo.PyECPoint(714)
+            ec_pt = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt.SetRandom()
             assert ec_pt.CheckOnCurve(), "test failed"
 
@@ -37,7 +37,7 @@ class ECPointTests(unittest.TestCase):
     # Generating Random EC
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt = PyNakasendo.PyECPoint(714)
+            ec_pt = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt.SetRandom()
             # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
             assert ec_pt.CheckOnCurve(), "test failed"
@@ -49,7 +49,7 @@ class ECPointTests(unittest.TestCase):
     # Generating Random EC Points
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt = PyNakasendo.PyECPoint(714)
+            ec_pt = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt.SetRandom()
             # Check if the point is on the curve with t
             assert ec_pt.CheckOnCurve(), "test failed"
@@ -63,9 +63,9 @@ class ECPointTests(unittest.TestCase):
         with open("./test_data/testData_AddECFromHex", "r") as addEChex_txt:
             for x in addEChex_txt:
                 hexNumber = x.split(",")
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.FromHex(hexNumber[0])
-            ec_pt_b = PyNakasendo.PyECPoint(714)
+            ec_pt_b = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_b.FromHex(hexNumber[1])
             assert ec_pt_a.CheckOnCurve(), "test failed"
             assert ec_pt_b.CheckOnCurve(), "test failed"
@@ -81,12 +81,12 @@ class ECPointTests(unittest.TestCase):
         for x in range(100):
 
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
             # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
             assert ec_pt_a.CheckOnCurve()
             # create a bignumber
-            val1 = PyNakasendo.PyBigNumber()
+            val1 = PyNakasendo.PyBigNumber.PyBigNumber()
             val1.GenerateRandHex()
 
             new_val = ec_pt_a * val1 
@@ -103,16 +103,16 @@ class ECPointTests(unittest.TestCase):
             for x in addEChex_txt:
 
                 hexNumber = x.split(",")
-                ec_pt_a = PyNakasendo.PyECPoint(714); 
+                ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714); 
                 ec_pt_a.FromHex(hexNumber[0]); 
                 # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
                 assert ec_pt_a.CheckOnCurve(), "Test failed"
 
-                ec_pt_b = PyNakasendo.PyECPoint(714); 
+                ec_pt_b = PyNakasendo.PyECPoint.PyECPoint(714); 
                 ec_pt_b.FromHex(hexNumber[1]); 
                 actual_value = ec_pt_a + ec_pt_b
 
-                ec_pt_res = PyNakasendo.PyECPoint(714); 
+                ec_pt_res = PyNakasendo.PyECPoint.PyECPoint(714); 
                 ec_pt_res.FromHex(hexNumber[2].rstrip("\n")); 
                 # Verifying the actual value with expected value
                 assert actual_value == ec_pt_res
@@ -124,19 +124,19 @@ class ECPointTests(unittest.TestCase):
         # Generating Random EC Points
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1s
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
             # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
             assert ec_pt_a.CheckOnCurve(), "Test failed"
 
             #Generate a Random Big number M and N using BigNumberAPIs
-            bigNumbM = PyNakasendo.PyBigNumber()
+            bigNumbM = PyNakasendo.PyBigNumber.PyBigNumber()
             bigNumbM.GenerateRandHex(257)
-            bigNumbN = PyNakasendo.PyBigNumber()
+            bigNumbN = PyNakasendo.PyBigNumber.PyBigNumber()
             bigNumbN.GenerateRandHex(128)
 
             # EC Point Scalar multiply with default NID => NID_secp256k1
-            actual_value = PyNakasendo.Multiply(ec_pt_a, bigNumbM, bigNumbN)
+            actual_value = PyNakasendo.PyECPoint.Multiply(ec_pt_a, bigNumbM, bigNumbN)
 
             # Verifying the the length of actual value as 66
             assert len(actual_value.ToHex()) == 66, "Test failed"
@@ -146,13 +146,13 @@ class ECPointTests(unittest.TestCase):
         # Generating Random EC Points
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
 
             # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
             assert ec_pt_a.CheckOnCurve() , "Test failed"
 
-            val1 = PyNakasendo.PyBigNumber()
+            val1 = PyNakasendo.PyBigNumber.PyBigNumber()
             val1.GenerateRandHex()
             # EC Point Scalar multiply on curve with supplied ID
             actual_value = ec_pt_a * val1
@@ -167,7 +167,7 @@ class ECPointTests(unittest.TestCase):
         # Generating Random EC Points
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
             # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
             assert ec_pt_a.CheckOnCurve() , "Test failed"
@@ -178,7 +178,7 @@ class ECPointTests(unittest.TestCase):
         # Generating Random EC Points
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
 
 
@@ -191,9 +191,9 @@ class ECPointTests(unittest.TestCase):
         # Generating Random EC Points
         for x in range(100):
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
-            ec_pt_b = PyNakasendo.PyECPoint(714)
+            ec_pt_b = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_b.SetRandom()
 
             assert ec_pt_a.CheckOnCurve(), "Test Failed"
@@ -208,7 +208,7 @@ class ECPointTests(unittest.TestCase):
         for x in range(100):
 
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
             # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
             assert ec_pt_a.CheckOnCurve(), "Test failed"
@@ -227,7 +227,7 @@ class ECPointTests(unittest.TestCase):
         for x in range(100):
 
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
             
 
@@ -246,7 +246,7 @@ class ECPointTests(unittest.TestCase):
         for x in range(100):
 
             # Generate a Random EC Point with default NID ==> NID_secp256k1
-            ec_pt_a = PyNakasendo.PyECPoint(714)
+            ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(714)
             ec_pt_a.SetRandom()
 
             # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
@@ -268,7 +268,7 @@ class ECPointTests(unittest.TestCase):
                 nidID_Degree_Value = x.split(",")
 
                 # Generate a Random EC Point with default NID ==> NID_secp256k1
-                ec_pt_a = PyNakasendo.PyECPoint(int(nidID_Degree_Value[0]))
+                ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(int(nidID_Degree_Value[0]))
                 ec_pt_a.SetRandom()
 
                 # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1
@@ -288,7 +288,7 @@ class ECPointTests(unittest.TestCase):
                 # Reading the line of the file as string and splitting into list
                 nidID_Degree_Value = x.split(",")
                 # Generate a Random EC Point with default NID ==> NID_secp256k1
-                ec_pt_a = PyNakasendo.PyECPoint(int(nidID_Degree_Value[0]))
+                ec_pt_a = PyNakasendo.PyECPoint.PyECPoint(int(nidID_Degree_Value[0]))
                 ec_pt_a.SetRandom()
 
                 # Check if the point is on the curve with the supplied NID default NID ==> NID_secp256k1

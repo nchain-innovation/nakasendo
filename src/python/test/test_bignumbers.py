@@ -3,7 +3,7 @@ from PyNakasendo import PyNakasendo
 
 class BigNumberTests(unittest.TestCase):
     def test_one(self):
-        val = PyNakasendo.PyBigNumber()
+        val = PyNakasendo.PyBigNumber.PyBigNumber()
         val.One()
         assert (val.ToHex() == "01")
 
@@ -14,9 +14,9 @@ class BigNumberTests(unittest.TestCase):
             for x in addDec_txt:
 
                 decNumber = x.split()
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
                 # Add too big numbers of arbitrary precision in dec
                 val3 = val1 + val2
@@ -29,9 +29,9 @@ class BigNumberTests(unittest.TestCase):
             for x in addHex_txt:
                 hexNumber = x.split()
                 # Add too big numbers of arbitrary precision in Hex
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromHex(hexNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromHex(hexNumber[1])
                 val3 = val1 + val2
                 #Verifying the actual value with expected value
@@ -42,9 +42,9 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_SubDec", "r") as subDec_txt:
             for x in subDec_txt:
                 decNumber = x.split()
-                val1= PyNakasendo.PyBigNumber()
+                val1= PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
                 val3 = val1 - val2
                 #Verifying the actual value with expected value
@@ -55,9 +55,9 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_SubHex", "r") as subHex_txt:
             for x in subHex_txt:
                 hexNumber = x.split()
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromHex(hexNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromHex(hexNumber[1])
                 val3 = val1 - val2
                 #Verifying the actual value with expected value
@@ -69,7 +69,7 @@ class BigNumberTests(unittest.TestCase):
             for x in genDec_txt.readlines():
                 decNumber = int(x)
                 # Generate Random Number of arbitrary precision in dec
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 result = val1.GenerateRandDec(512)
                 #Verifying the actual value as a string and not negative value
                 assert type(result) is str and result != "-1", "Test failed"
@@ -80,7 +80,7 @@ class BigNumberTests(unittest.TestCase):
             for x in genHex_txt.readlines():
                 decNumber = int(x)
                 # Generate Random Number of arbitrary precision in dec
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 str_val = val1.GenerateRandHex(512)
                 #Verifying the actual value as a string and not negative value
                 assert type(str_val) is str and str_val != "-1", "Test failed"
@@ -137,9 +137,9 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_MultiplyDec", "r") as multiplyDec_txt:
             for x in multiplyDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
                 val3 = val1 * val2
                 # Verifying the actual value with expected value
@@ -156,8 +156,8 @@ class BigNumberTests(unittest.TestCase):
                 k = int(decNumber[2].rstrip("\n"))
               
 
-                val_i = PyNakasendo.PyBigNumber()
-                val_j = PyNakasendo.PyBigNumber()
+                val_i = PyNakasendo.PyBigNumber.PyBigNumber()
+                val_j = PyNakasendo.PyBigNumber.PyBigNumber()
                 val_i.FromDec(decNumber[0])
                 val_j.FromDec(decNumber[1])
                 val_res = val_i * val_j
@@ -168,9 +168,9 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_LeftRightShiftDec", "r") as leftDec_txt:
             for x in leftDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
                 # leftshit bitwise operation that moves bits of right big number to the left by left big number value in dec
                 val3 = val1 << val2
@@ -182,9 +182,9 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_LeftRightShiftDec", "r") as rightDec_txt:
             for x in rightDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[2])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
                 # rightshift bitwise operation that moves bits of right big number to the right by left big number value in dec
                 val3 = val1 >> val2
@@ -198,9 +198,9 @@ class BigNumberTests(unittest.TestCase):
             for x in divideDec_txt:
                 decNumber = x.split(",")
                 # Divide two big numbers of arbitrary precision in dec
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
                 val3 = val1 / val2
                 # Verifying the actual value with expected value
@@ -212,9 +212,9 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_ModuloDec", "r") as moduloDec_txt:
             for x in moduloDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
                 val3 = val1 % val2
                 # Verifying the actual value with expected value
@@ -226,13 +226,13 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_AddModDec", "r") as addModDec_txt:
             for x in addModDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
-                val3 = PyNakasendo.PyBigNumber()
+                val3 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val3.FromDec(decNumber[2])
-                val4 = PyNakasendo.PyBigNumber.Add_mod(val1, val2, val3)
+                val4 = PyNakasendo.PyBigNumber.PyBigNumber.Add_mod(val1, val2, val3)
                 # Verifying the actual value with expected value
                 assert val4.ToDec() == decNumber[3].rstrip("\n"), "Test failed"
 
@@ -241,13 +241,13 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_SubModDec", "r") as subModDec_txt:
             for x in subModDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
-                val3 = PyNakasendo.PyBigNumber()
+                val3 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val3.FromDec(decNumber[2])
-                val4 = PyNakasendo.PyBigNumber.Sub_mod(val1, val2, val3)
+                val4 = PyNakasendo.PyBigNumber.PyBigNumber.Sub_mod(val1, val2, val3)
                 # Verifying the actual value with expected value
                 assert val4.ToDec() == decNumber[3].rstrip("\n"), "Test failed"
 
@@ -258,13 +258,13 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_MulModDec", "r") as mulModDec_txt:
             for x in mulModDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
-                val3 = PyNakasendo.PyBigNumber()
+                val3 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val3.FromDec(decNumber[2])
-                val4 = PyNakasendo.PyBigNumber.Mul_mod(val1, val2, val3)
+                val4 = PyNakasendo.PyBigNumber.PyBigNumber.Mul_mod(val1, val2, val3)
                 # Multiply modulo of big numbers of arbitrary precision in dec
                 assert val4.ToDec() == decNumber[3].rstrip("\n"), "Test failed"
 
@@ -274,14 +274,14 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_DivModDec", "r") as divModDec_txt:
             for x in divModDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])
-                val3 = PyNakasendo.PyBigNumber()
+                val3 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val3.FromDec(decNumber[2])
                 #Divide modulo of big numbers of arbitrary precision in dec
-                val4 = PyNakasendo.PyBigNumber.Div_mod(val1, val2, val3)
+                val4 = PyNakasendo.PyBigNumber.PyBigNumber.Div_mod(val1, val2, val3)
 
                 #verifying the actual value with the expected value
                 assert val4.ToDec() == decNumber[3].rstrip("\n"), "Test failed"
@@ -292,12 +292,12 @@ class BigNumberTests(unittest.TestCase):
         with open("./test_data/testData_InvModDec", "r") as invModDec_txt:
             for x in invModDec_txt:
                 decNumber = x.split(",")
-                val1 = PyNakasendo.PyBigNumber()
+                val1 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val1.FromDec(decNumber[0])
-                val2 = PyNakasendo.PyBigNumber()
+                val2 = PyNakasendo.PyBigNumber.PyBigNumber()
                 val2.FromDec(decNumber[1])    
                 #Inverse modulo of big numbers of arbitrary precision in dec
-                actual_value = PyNakasendo.PyBigNumber.Inv_mod(val1,val2)
+                actual_value = PyNakasendo.PyBigNumber.PyBigNumber.Inv_mod(val1,val2)
                 #verifying the actual value with the expected value
                 assert actual_value.ToDec() == decNumber[2].rstrip("\n"), "Test failed"
 
