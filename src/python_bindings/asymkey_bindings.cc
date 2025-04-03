@@ -4,6 +4,7 @@
 #include <AsymKey/AsymKey.h>
 #include <ECPoint/ECPoint.h>
 #include <BigNumbers/BigNumbers.h>
+#include <sstream>
 
 void register_asymkey_bindings(pybind11::module_ &m){
     // Create a submodule for AsymKey-related functions

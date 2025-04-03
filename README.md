@@ -7,6 +7,20 @@ This project has a github submodule included. Please execute below after cloning
 ```bash
 git submodule update --init --recursive
 ```
+
+# Requirements
+This project has been built on MACOS using the CLANG toolset. If you wish to run on linux, please ensure CLANG is installed. There is also a dependency on the following.
+
+* CMAKE v3.26 or higher
+* Openssl v3.1 or higher 
+* PyBind11
+* python setuptools and python wheel
+
+To install PyBind11:
+```bash
+pip install --upgrade pip setuptools wheel pybind11
+```
+
 # To build the c/c++
 ```bash
 mkdir build
@@ -19,7 +33,7 @@ make test
 # To build the python wheel
 * Install a pyton virtual environment and source it
 * pip3 wheel -w build . --verbose
-* pip3 install --force-reinstall build/pynakasendo-0.0.1-cp313-cp313-macosx_15_0_arm64.whl
+* pip3 install --force-reinstall  "$(find build -name '*.whl' | head -n 1)"
 
 ## Python tests
 ```bash
